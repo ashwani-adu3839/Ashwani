@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peeping Inside Black box</title>
+   <script>
+  window.onload = function() {
+    var figcaptions = document.querySelectorAll('figcaption');
+    for (var i = 0; i < figcaptions.length; i++) {
+      figcaptions[i].innerHTML = 'Figure ' + (i + 1) + ': ' + figcaptions[i].innerHTML;
+    }
+  }
+</script>
+<style>
+    .code-block {
+        text-align: left;
+        margin-left: 0;
+        margin-right: 0;
+        padding: 0;
+    }
+
+    .code-block pre {
+        white-space: pre-wrap; /* Preserve line breaks */
+        overflow-x: auto; /* Enable horizontal scroll if needed */
+    }
+    .home-link-text {
+        font-weight: bold;
+        color: red;
+        text-decoration: none;
+
+    }
+    
+    .home-link-text:hover {
+        color: blue;
+        text-decoration: underline;
+
+    }
+
+</style>
+
+<script>
+  window.MathJax = {
+    tex: {
+      tags: 'ams',
+      tagFormat: 'Eqn.%i',
+      tagSide: 'right'
+    }
+  };
+</script>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="home-link">
+        <a href="ml.html" class="home-link-text">Back</a>
+    </div>
+    <h1>Peeping Inside Black box : Regression</h1>
+    <section>
+        <h2>Introduction</h2>
+        <p>The evolution of machine learning has been remarkable, transitioning from understandable traditional algorithms to the intricate architectures of deep neural networks. Deciphering these complex networks remains a challenge, akin to understanding the hidden mechanisms of traditional algorithms through techniques like local minima analysis. However, a comprehensive grasp of deep networks continues to elude us, casting uncertainty on our understanding of various algorithms.
+</p>
+
+          <p>While I won't delve deeply into the complexities of deep learning algorithms, I aim to shed light on their workings using simpler networks. Drawing parallels to my experiences in theoretical physics, where deciphering complex mathematical expressions was a recurring challenge, I seek to explore the fundamental nature of neurons in artificial neural networks</p>
+
+        <p>The magic of deep learning lies in its ability to bypass the tedious, manual process of feature engineering. Instead, by employing cleverly designed architectures and optimization techniques, the network itself learns to identify and extract relevant features from data.</p>
+
+        <p>In this part, we'll delve into regression problems, followed by an expansion into classification problems in the subsequent par. We'll also explore feature representation from these models. Subsequently, we'll present a simple real-life problem from NLP, marking the beginning of a more intricate journey. In the next work, we'll delve into more complex deeper networks and the renowned transformer architecture.</p>
+    </section>
+
+    <section>
+        <h2>Machine Learning Approach</h2>
+        <p>To illustrate the concept of Machine learning, let's dive into a practical example. We'll take a deep dive into a specific dataset Table.(<a href="#input-output-table">Input-Output Table</a>).</p>
+
+	 <table id="tab:input_output">
+
+            <caption>Input-Output Table</caption>
+            <thead>
+                <tr>
+                    <th>Input</th>
+                    <th>Output</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>2</td>
+                    <td>4.04</td>
+                </tr>
+                <tr>
+                    <td>2.5</td>
+                    <td>6.28</td>
+                </tr>
+                <tr>
+                    <td>2.9</td>
+                    <td>8.45</td>
+                </tr>
+                <tr>
+                    <td>1.2</td>
+                    <td>1.4</td>
+                </tr>
+                <tr>
+                    <td>5.3</td>
+                    <td>28.0</td>
+                </tr>
+                <tr>
+                    <td>4.3</td>
+                    <td>18.60</td>
+                </tr>
+                <tr>
+                    <td>6.75</td>
+                    <td>45.50</td>
+                </tr>
+                <tr>
+                    <td>6.75</td>
+                    <td>45.50</td>
+                </tr>
+                <tr>
+                    <td>7.5</td>
+                    <td>56.00</td>
+                </tr>
+                <tr>
+                    <td>7.9</td>
+                    <td>62.3</td>
+                </tr>
+                <tr>
+                    <td>6.4</td>
+                    <td>41.00</td>
+                </tr>
+                <tr>
+                    <td>....</td>
+                    <td>....</td>
+                </tr>
+            </tbody>
+
+        </table>
+
+        <p>We have a collection of data points scattered on a graph, with each point representing a relationship between two variables. Your goal is to find a line or curve that best captures the overall trend of these points. This line or curve is your model, and the process of finding it is called "fitting" the model to the data.</p>
+
+        <p><strong>This dataset holds immense potential for uncovering hidden patterns and insights.</strong> To unlock its secrets, we'll embark on a journey of discovery using the powerful tools of machine learning. Let's take it step-by-step:</p>
+
+
+<!--<div style="display: flex;">
+  <div style="flex: 1;">
+    <img src="Example_Plot.png" alt="Example Plot 1" style="width: 100%;">
+  </div>
+  <div style="flex: 1;">
+    <img src="Example_Plot.png" alt="Example Plot 2" style="width: 100%;">
+  </div>
+</div>
+<figcaption>The Comparison between Actual and Model for the two scenarios.</figcaption> -->
+
+
+        <p><strong>Step 1: Building a Simple Model</strong></p>
+
+        <p>Imagine we have a machine that takes numbers as input (\( x \)) and outputs other numbers (\( X \)). To understand the relationship between \( x \) and \( X \), we can start with a simple model:</p>
+
+        <p><strong>Model:</strong> \( Y = aX \)</p>
+
+        <p>This equation says that \( Y \) is simply a scaled version of \( X \), determined by the coefficient "\( a \)". It's like stretching or shrinking \( X \) according to the value of \( a \).</p>
+
+        <p><strong>Step 2: Testing the Model's Fit</strong></p>
+
+        <p>Can this simple model handle all the data? We plug in different values of \( X \) and compare the predicted \( Y \) values (using our model) to the actual \( Y \) values in the dataset. This comparison reveals:</p>
+
+        <p><strong>Limitations:</strong> If the data exhibits complex patterns beyond just scaling, the \( Y \) predictions from our simple model will likely deviate significantly from the actual values.</p>
+
+        <p><strong>Step 3: Introducing Complexity</strong></p>
+
+        <p>To capture these intricate patterns, we can add more sophistication to our model. One way is to introduce a quadratic term:</p>
+
+        <p><strong>Model:</strong> \( Y = aX + bX^2 \)</p>
+
+        <p>This equation adds a "bendiness" factor to the model, controlled by the coefficient "\( b \)". Now, by adjusting both \( a \) (slope) and \( b \) (bendiness), we can potentially achieve a much better fit to the data. It appears that \( a \approx 0 \) and \( b\approx1 \) remarkably align with our dataset in Fig. <a href="#fig:Example_Plot">1</a>.</p>
+        
+        <figure id= "fig:Example_Plot">
+            <img src="assets/images/Example_Plot.png" alt="Example Plot"style="width: 400px; height: 350px;">
+            <figcaption>The Comparison between Actual Data and Model.</figcaption>
+        </figure>
+        <p>However, it's lamentable that we had to infer on our own which polynomial terms would best suit our model's fit. Choosing the right terms and complexity remains an exciting challenge in machine learning. Through continued exploration and analysis, we can unlock the secrets hidden within this dataset and gain valuable insights from its hidden patterns.</p>
+    </section>
+    <section>
+        <h2>Deep Learning Approach</h2>
+
+        <p>Let's explore this problem using a neural network. Our objective? Discovering the simplest network suitable for our dataset. Any specific normalization conditions or other considerations?</p>
+
+        <p>Let's start with neurons in a basic architecture:</p>
+
+        <p>\[ z = ax + b \]</p>
+
+        <p>These neurons follow a linear path. No matter how many layers I add, the solution remains linear. But let's set aside the technical terms for a moment and put it to the test.</p>
+
+        <p>Imagine we have just two neurons, and we combine them, with linear activation function:</p>
+    <eqn>
+        \[
+        \begin{align*}
+        z_{1} &= a_{1}x + b_{1} \\
+        z_{2} &= a_{2}x + b_{2} \\
+        \ldots \\
+        z_{3} &= z_{1} + z_{2} \\
+        z_{3} &= (a_{1}+a_{2})x + (b_{1}+b_{2})
+        \end{align*}
+        \]
+    </eqn>
+        <p>Whoops! It seems the result remains linear. Even when we bring these neurons together, the path they follow stays just as straight. Nonlinearity? Not happening here!</p>
+    </section>
+    <section>
+   <h3>Introducing Nonlinearity with Activation Functions</h3>
+
+The magic of neural networks lies in their ability to handle complex, non-linear relationships. This power comes from activation functions.
+
+Here's why activation functions are crucial and what happens to a network without them:
+<br>
+Real-world data is rarely linear. Most data in the real world exhibits non-linear patterns. Imagine trying to predict house prices based on square footage. A linear model wouldn't capture the nuances of this relationship (e.g., larger houses generally cost more, but the price increase slows down as the house gets extremely large).
+<br>
+Activation functions unlock non-linearity. By introducing non-linear steps between layers of neurons, activation functions allow the network to learn and represent these complex patterns.   
+    </section>
+    
+    <section>
+        <h2>Example: Non Linearity</h2>
+        Nonlinearity refers to a relationship between two variables where a change in one does not produce a proportional change in the other. Unlike linear relationships, which can be represented by a straight line, nonlinear relationships curve, bend, or exhibit complex patterns.
+Functions such as \(x^2, x^3, x^4\), ... etc., or combinations of these powers of x are called polynomial functions, written as:
+        \[
+        \begin{align}
+        f(x) = a_n * x^n + a_{(n-1)} * x^{(n-1)} + ... + a_2 * x^2 + a_1 * x + a_0
+ 	\end{align}
+ 	\]
+	Here, n is a non-negative integer called the degree of the polynomial,
+	\(a_n, \, a_{n-1}, \dots, \, a_1, \, a_0\)
+	are constants, known as coefficients, and x is the variable.
+	However, using these functions as activations is difficult due to the complexity of determining the order.
+	Can we think of a function that provides any power of x !!
+	<br>
+	Oh..!! we have something like that \(e^{x}\) represented using infinite series of polynomials, called infinite polynomial series or Taylor series. For example, the Taylor series for \(e^{x}\) centered at x = 0 is:
+	\[
+        \begin{align}
+	e^x = 1 + x + (x^2)/2! + (x^3)/3! + (x^4)/4! + ...
+        \end{align}
+ 	\] 
+
+ 	<br>
+ 	However, as the function is monotonically increasing, it can cause <strong>gradient issues</strong> during training: the gradients can become very large or very small, making it difficult for the network to learn effectively.
+ 	<br>
+	We need to find another function to solve this problem. What about Sigmoid or tanh ? They also involve \(e^{x}\) in their formulations.
+    </section>
+    
+    <section>
+        <h2>Sigmoid: Non Linearity</h2>
+         <p>Let's consider the Sigmoid function and study it a bit.</p>
+    <eqn>
+        \[
+        \begin{align}
+            g(x) &= \frac{1}{1+e^{-x}} \label{Eqn:sigmoid} \\
+            \text{For our case:} \quad z &= y + b \quad ; \text{where } y = ax \\
+            g(z) &= \frac{1}{1+e^{-(y+b)}}
+        \end{align}
+        \]
+    </eqn>
+    <p>This looks complex... Can we really make sense out of it...!!!</p>
+<p>To assess the suitability of the sigmoid function in our context, we perform a Taylor series expansion:</p>
+    <div class="md-frame">
+        <h4>Taylor Series Expansion</h4>
+        <p>The Taylor series expansion of a function \( f(x) \) around a point \( a \) is given by:</p>
+        <p>\[ f(x) = f(a) + f'(a)(x-a) + \frac{f''(a)}{2!}(x-a)^2 + \frac{f'''(a)}{3!}(x-a)^3 + \dotsb \]</p>
+        <p>In this expansion:</p>
+        <ul>
+            <li>\( f(a) \) represents the value of the function at \( x=a \).</li>
+            <li>\( f'(a) \) represents the first derivative of \( f(x) \) evaluated at \( x=a \).</li>
+            <li>\( f''(a) \) represents the second derivative of \( f(x) \) evaluated at \( x=a \).</li>
+            <li>Similarly, \( f'''(a) \) represents the third derivative, and so on.</li>
+        </ul>
+        <p>The \( n \)th term in the expansion involves the \( n \)th derivative of \( f(x) \) evaluated at \( x=a \) divided by \( n! \) times \( (x-a)^n \).</p>
+        <p>The Taylor series expansion is a way to represent a function as an infinite sum of terms involving its derivatives evaluated at a specific point \( a \). This expansion is particularly useful in calculus and mathematical analysis for approximating functions around a given point.</p>
+    </div>
+    <div class="md-frame">
+        <h4>Approximate Sigmoid Function</h4>
+        <p>For the Sigmoid function around \( y \approx 0 \) or \( |y| < 1 \):</p>
+        <eqn>
+            \begin{align}
+        g(z) & \approx g(b) + yg'(b) + \frac{y^{2}}{2!}g''(b) + \frac{y^{3}}{3!}g'''(b) + \frac{y^{4}}{4!}g''''(b) + \dots \label{Eqn:SigApprox}\\
+    	\end{align}
+    	</eqn>
+        <p>where,</p>
+        <p>\( g'(b), g''(b), g'''(b) \) and \( g''''(b) \) are the first, second, third, and fourth derivatives of the sigmoid function \( g(x) \) \( Eqn.(\ref{Eqn:sigmoid} \)) evaluated at \( b \).</p>
+    </div>
+    <h3>Evaluation of Approximation:</h3>
+    <p>The accuracy of the sigmoid function approximation, as defined in \( Eqn.(\ref{Eqn:SigApprox} \)), is dependent on the magnitude of y:</p>
+    <ul>
+        <li><strong>Suitable Approximation (\( \lvert y \rvert < 1 \)): </strong>For \( \lvert y \rvert < 1 \), the approximation closely matches the sigmoid function for any value of \( b \) as shown in Fig. <a href="#fig:sigmoidb_map">2(a)</a>.</li>
+        <li><strong>Inadequate Approximation (\( |y|>1 \)): </strong>When \( |y|>1 \), the approximation doesn't hold for all values of \( b \) as shown in Fig. <a href="#fig:sigmoidb_map">2(b)</a>.</li>
+    </ul>
+    
+    	<div style="display: flex;">
+	  <div style="flex: 1;"id="fig:sigmoidb_map">
+	    <img src="assets/images/image_b_good.png" alt="Good sigmoid approximation" style="width: 100%;">
+	  </div>
+	  <div style="flex: 1;">
+	    <img src="assets/images/image_b_bad.png" alt="Poor sigmoid approximation" style="width: 100%;">
+	  </div>
+	</div>
+	<figcaption>(a) The approximated sigmoid function works pretty good for \( |y|<1 \), for all the values of \( b \).<br>
+	(b) The Sigmoid approximation for \( |y|>1 \), is only satisfied for range of \( b \) values where \( |y+b| < 1 \)</figcaption>
+	    
+    
+    <h3>Key Implications:</h3>
+    <ul>
+        <li><strong>Model Conditioning:</strong> To guarantee model accuracy, we prioritize situations where \( \lvert y \rvert < 1 \), effectively imposing a constraint on the model bias.</li>
+        <li><strong>Data Normalization:</strong> This finding emphasizes the crucial role of data normalization or rescaling within a range satisfying \( \lvert ax \rvert < 1 \).</li>
+        <li><strong>Deep Learning Connection:</strong> This principle aligns with established deep learning practices, such as batch normalization and data scaling.</li>
+    </ul>
+    <h3>Conclusion:</h3>
+    <p>The analysis underscores the vital importance of data normalization for the validity of the sigmoid function approximation. This ensures model accuracy and aligns with standard practices in deep learning.</p>
+    <figure id="fig:dersig">
+        <img src="assets/images/image_b_derivative.png" alt="Derivatives of Sigmoid Function"style="width: 400px; height: 350px;">
+        <figcaption>The derivatives of Sigmoid Function.</figcaption>
+    </figure>
+    <p>While a formal proof falls outside the scope of our current discussion, visual examination of the derivative of sigmoid functions, as depicted in Fig. <a href="#fig:dersig">3</a>, reveals a salient characteristic: their values consistently remain bounded below unity.</p>
+    <p>The same goes for sigmoid most closest ally \( \tanh \) activation function. We have shown that in <a href="#subappendices">Appendix</a>.</p>
+    </section>
+
+
+
+    <section>
+    <h2>The Quest Begins: Embracing Complexity to Capture \( X = x^2 \)</h2>
+    <p>Our journey delves into the intriguing realm of neural networks, where we embark on a mission to conquer the challenge of approximating a non-linear relationship: \( X \approx x^2 \). Through this exploration, we unveil the limitations and hidden potential of different network architectures, paving the way for a deeper understanding of their expressive power.</p>
+    <h3>Single Neuron's Stumble: The Linearity Barrier</h3>
+    <p><strong>Initial Exploration:</strong> We commence our quest with a single neuron shown in Fig. <a href="#fig:one_neuron">4</a>, armed with linear activation:</p>
+    \[ z = ax + b \]
+    \[ X = g(z) \]
+    <figure id="fig:one_neuron">
+        <img src="assets/images/one_neuron.png" alt="The One neuron architecture of DL"style="width: 400px; height: 150px;">
+        <figcaption>The One neuron architecture of DL.</figcaption>
+    </figure>
+    <ul>
+        <li><strong>Taylor Series Unveiling:</strong> To illuminate the neuron's behavior, we wield the tool of a Taylor series expansion around the bias \( b \).</li>
+    </ul>
+    \[ X \approx g(b) + (ax)g'(b) + \frac{(ax)^2}{2!}g''(b) + \dots \]
+    <ul>
+        <li><strong>Focusing on the Leading Terms:</strong> Scrutinizing the dominant terms, we encounter a crucial insight:</li>
+    </ul>
+    \[ X \approx g(b) + (ax)g'(b) + \frac{(ax)^2}{2!}g''(b) \]
+    <p><strong>Hitting the Wall:</strong> Despite the non-linear activation function \( g \), the single neuron's inherent linearity shackles its ability to fully capture the quadratic curvature of \( X \approx x^2 \). This limitation impedes our network from accurately modeling the desired relationship.</p>
+    <h3>Enhancing Expressive Capacity with Two Neurons</h3>
+    <figure id="fig:two_neuron">
+        <img src="assets/images/two_neuron.png" alt="The Two neuron architecture of DL"style="width: 400px; height: 300px;">
+        <figcaption>The Two neuron architecture of DL.</figcaption>
+    </figure>
+    <p>To transcend the limitations posed by a solitary neuron, we advance towards a more potent architecture as shown in Fig. <a href="#fig:two_neuron">5</a>; dual-neuron network:</p>
+    \[
+    \begin{aligned}
+    z_1 &= a_{11}x + b_{11} \\
+    z_2 &= a_{12}x + b_{12} \\
+    X &= a_{21}g(z_1) + a_{22}g(z_2) + b_2
+    \end{aligned}
+    \]
+    <p>Focusing on leading terms:</p>
+    \[
+    \begin{aligned}
+    X &\approx  b_{2} + a_{21} g(b_{11}) + a_{22} g(b_{12}) + x (a_{11} a_{21} g'(b_{11}) + a_{12} a_{22} g'(b_{12})) \\
+    &+ \frac{x^2}{2} (a_{11}^2 a_{21} g''(b_{11}) + a_{12}^2 a_{22} g''(b_{12})) + \dots
+    \end{aligned}
+    \]
+    <p>Exploring the Taylor series for both neurons and focusing on the leading terms, we derive the weight and bias conditions enabling \( X \approx x^2 \):</p>
+    \[
+    \begin{aligned}
+    a_{21} &= \frac{2g'(b_{12})}{a_{11}^2 g'(b_{12}) g''(b_{11}) - a_{11} a_{12} g'(b_{11}) g''(b_{12})} \\
+    a_{22} &= -\frac{2g'(b_{11})}{a_{11} a_{12} g'(b_{12}) g''(b_{11}) - a_{12}^2 g'(b_{11}) g''(b_{12})} \\
+    b_2 &= \frac{2(a_{11}g(b_{12})g'(b_{11})- a_{12}g(b_{11})g'(b_{12}))}{a_{11}^2 g'(b_{12}) g''(b_{11}) - a_{11} a_{12} g'(b_{11}) g''(b_{12})}
+    \end{aligned}
+    \]
+    <p>Simplifying further, we refine these conditions by imposing constraints like \( b_{11} = b_{12} \) and \( a_{11} = -a_{12} \):</p>
+    \[
+    \begin{aligned}
+    a_{21} = a_{22} &= \frac{1}{a_{12}^2 g''(b_{12})} \\
+    b_2 &= -\frac{2g(b_{12})}{a_{12}^2 g''(b_{12})}
+    \end{aligned}
+    \]
+    <p>Ensuring \( |a_{11}x|<1 \) guarantees the convergence of the Taylor series expansion, adding a layer of stability to the model.</p>
+    <p>Understanding the intuition behind these equations is pivotal. The combination of weighted non-linear activations from both neurons enriches the input representation. This capability enables the network to capture the quadratic curvature of \( X \approx x^2 \) that a single neuron cannot.</p>
+    <p>Consider plotting each neuron's activation function alongside the desired quadratic function. This visualization illustrates how the dual-neuron network can flex its combined output to more closely approximate the quadratic curve.</p>
+    <p>This two-neuron framework signifies a notable advancement in expressive potential compared to a solitary neuron. By thoughtfully configuring weights and biases, we harness the synergy of multiple neurons to tackle intricate non-linear relationships.</p>
+    <h3>Evaluation of Model</h3>
+    <p>Let's assess the performance and validity of this model. This code snippet defines a <code>Polynomial Regression</code> class using PyTorch's neural network module. It involves two linear layers along with a sigmoid activation function. The weights and biases are preset for each layer, with explicit configurations provided for better understanding and evaluation.</p>
+<pre class="md-frame">
+        <code class="language-python">
+class PolynomialRegression(nn.Module):
+    def __init__(self):
+        super(PolynomialRegression, self).__init__()
+        self.linear1 = nn.Linear(1, 2) # Weight matrix
+        self.m = nn.Sigmoid()
+        self.linear2 = nn.Linear(2, 1) # Weight matrix 
+    def forward(self, x):
+        x = self.linear1(x)
+        x = self.m(x)
+        x = self.linear2(x)
+        return x
+linear1.weight = [[-0.01],[0.01]]
+linear2.weight = [[-3.73344*pow(10,5),-3.73344*pow(10,5)]]
+linear1.bias = [3.5,3.5]
+linear2.bias = [7.248*pow(10,5)]
+        </code>
+    </pre>
+    <p>For values \( a_{12} = - a_{11} = -0.01 \) and \( b_{12} = 3.5 \), we would get \( a_{21} = a_{22} = -3.73344 \times 10^{5} \) and \( b_2 = 7.248 \times 10^{5} \). This would provide a suitable fit as Shown in Fig. <a href="#fig:Square">6</a>, where actual and model prediction coincide with minimum error.</p>
+    <p>This setup aims to approximate a polynomial relationship within the data. We'll proceed to test this model.</p>
+      <figure id="fig:Square">
+        <img src="assets/images/Square.png" alt="The Comparison between Actual and Model"style="width: 400px; height: 350px;">
+        <figcaption>The Comparison between Actual and Model.</figcaption>
+    </figure>
+    <p>While the current approach holds promise, could we potentially push the envelope further? Perhaps incorporating higher-order terms, such as cubic terms, into the model might yield even more accurate results.</p>
+</section>
+<section>
+ <h2>Delving Deeper: Approximating \( X \approx x^3 \)</h2>
+    <p><strong>Unveiling the Power of Two</strong></p>
+    <p>Can a mere pair of neurons conquer the cubic realm? Let's embark on this exploration, armed with mathematical insights and computational prowess.</p>
+    <p><strong>Taylor Series Ascendancy</strong></p>
+    <p>We commence by invoking the revered Taylor series to unveil the hidden facets of our two-neuron architecture:</p>
+    <h4>Equations Unveiled</h4>
+    \[
+    \begin{align*}
+    z_1 &= a_{11}x + b_{11} \\
+    z_2 &= a_{12}x + b_{12} \\
+    X &= a_{21}g(z_1) + a_{22}g(z_2) + b_2
+    \end{align*}
+    \]
+    <p>Meticulously expanding these equations, we isolate the leading terms, revealing a pathway towards cubic approximation:</p>
+    \[
+    \begin{align*}
+    X &\approx b_2 + a_{21}g(b_{11}) + a_{22}g(b_{12}) + x(a_{11}a_{21}g'(b_{11}) + a_{12}a_{22}g'(b_{12})) \\
+    &+ \frac{x^2}{2}(a_{11}^2a_{21}g''(b_{11}) + a_{12}^2a_{22}g''(b_{12})) + \frac{x^3}{6}(a_{11}^3a_{21}g'''(b_{11}) + a_{12}^3a_{22}g'''(b_{12})) + \dots
+    \end{align*}
+    \]
+    <p><strong>Condition for Cubic Conquest</strong></p>
+    <p>To achieve the coveted \( X\approx x^{3} \), we meticulously derive a set of constraints upon the weights and biases:</p>
+    <h4>Equations Imposed</h4>
+    \[
+    \begin{align*}
+    a_{12} &= \frac{a_{11}g''(b_{11})g'(b_{12})}{g'(b_{11})g''(b_{12})} \\
+    a_{21} &= \frac{6g'(b_{11})g''(b_{12})^2}{a_{11}^3(g'(b_{11})g''(b_{12})^2g'''(b_{11})-g'(b_{12})g''(b_{11})^2g'''(b_{12}))} \\
+    a_{22} &= -\frac{6g'(b_{11})^3g''(b_{12})^3}{a_{11}^3g'(b_{12})^2(g'(b_{11})g''(b_{11})g''(b_{12})^2g'''(b_{11})-1g'(b_{12})g''(b_{11})^3g'''(b_{12}))} \\
+    b_{21} &= -\frac{6g'(b_{11})g''(b_{12})^2(g(b_{11})g'(b_{12})^2g''(b_{11})-g(b_{12})g'(b_{11})^2g''(b_{12}))}{a_{11}^3g'(b_{12})^2(g'(b_{11})g''(b_{11})g''(b_{12})^2g'''(b_{11})-g'(b_{12})g''(b_{11})^3g'''(b_{12})}
+    \end{align*}
+    \]
+    <p><strong>Numerical Manifestation</strong></p>
+    <p>We translate these theoretical insights into the realm of computation, employing Python to craft a tangible model:</p>
+    <p>Let's evaluate the efficacy and reliability of this model. The following code snippet establishes a <code>PolynomialRegression</code> class utilizing PyTorch's neural network module. It comprises two linear layers along with a sigmoid activation function. Explicitly predefined weights and biases for each layer are included to enhance comprehension and facilitate assessment.</p>
+    <pre class="md-frame">
+        <code class="language-python">
+class PolynomialRegression(nn.Module):
+    def __init__(self):
+        super(PolynomialRegression, self).__init__()
+        self.linear1 = nn.Linear(1, 2) # Weight matrix
+        self.m = nn.Sigmoid()
+        self.linear2 = nn.Linear(2, 1) # Weight matrix 
+    def forward(self, x):
+        x = self.linear1(x)
+        x = self.m(x)
+        x = self.linear2(x)
+        return x
+linear1.weight = [[0.01],[-0.0490245]]
+linear2.weight = [[2.21685*pow(10,6),4.2613*pow(10,5)]]
+linear1.bias = [0.5,-0.1]
+linear2.bias = [-1.58232*pow(10,6)]
+        </code>
+    </pre>
+    <p>For values \( a_{11}= 0.01 \), \( b_{11} = 0.5 \) and \( b_{12} = -0.1 \), we would get \( a_{12}= -0.0490245 \), \( a_{21} = 2.21685 \times 10^{6} \), \( a_{22} = 4.2613 \times 10^{5} \) and \( b_{21}=-1.58232\times 10^{6} \). This would provide a suitable fit as Shown in Fig. <a href="#fig:Cube">7</a>, where actual and model prediction coincide with minimum error.</p>
+    <figure id="fig:Cube">
+        <img src="assets/images/Cube.png" alt="The Comparison between Actual and Model"style="width: 400px; height: 350px;">
+        <figcaption>The Comparison between Actual and Model.</figcaption>
+    </figure>
+    <p>This configuration endeavors to mimic a polynomial association within the dataset. Our next step involves testing this model's performance and meticulously analyzing its accuracy in capturing the inherent data patterns.</p>
+</section>
+<section>
+<h2>Unveiling the Art of Multiplication with Neurons: xy</h2>
+    <p><strong>The Elusive Nature of Multiplication in Single Neurons</strong></p>
+    <p>Individual neurons are great at understanding simple connections between things, but they struggle when it comes to directly understanding something like multiplying two things together, like \( xy \).</p>
+    <p>How can we solve this with two inputs, \( x \) and \( y \)? If we use just one neuron:</p>
+    \[
+    \begin{align*}
+    z &= a_{11}x+a_{12}y+b_{11} \\
+    g(z) &\approx f(b_{11}) + a_{11} x g^{'}(b_{11})+a_{12} y g^{'}(b_{11})+\frac{1}{2} a_{11}^2 x^2 g^{''}(b_{11})+\frac{1}{2} a_{12}^2 y^2 g^{''}(b_{11}) +a_{12} a_{11} \textcolor{red}{x y}
+    g^{''}(b_{11})+ \dots
+    \end{align*}
+    \]
+    <p>We're looking for a condition where the term that involves \( xy \) is the most important. This is quite a challenging problem, but there might be a clever way to simplify it.</p>
+    <p>This kind of math is trickier for a single neuron because it's not just a straightforward relationship. To tackle this, we need a smarter setup: a team of neurons that can work together to handle these complex tasks.</p>
+    <p><strong>Constructing a Concerto of Neurons</strong></p>
+    <p>The architectural masterpiece we unveil unfolds in two acts as Shown in Fig. <a href="#fig:four_neuron">8</a>. The Four neuron architecture of DL:</p>
+    <p><strong>Act I: The First Hidden Layer - A Quartet of Emphasis</strong></p>
+    <figure id="fig:four_neuron">
+        <img src="assets/images/four_neurons.png" alt="The Four neuron architecture of DL"style="width: 350px; height: 350px;">
+        <figcaption>The Four neuron architecture of DL.</figcaption>
+    </figure>
+    
+    <p>Visualize four specialized neurons, each finely tuned to magnify the representation of \( xy \) in their activities. We consider 4 neurons with \( x \) and \( y \) as input. The first hidden layer would be:</p>
+    \[
+    \begin{align*}
+    z_{11} &= a (x+y)+b \\
+    g(z_{11}) &= \frac{1}{2} a^2 x^2 g^{''}(b)+a^2 \textcolor{red}{x y} g^{''}(b)+\frac{1}{2} a^2 y^2 g^{''}(b)+a x g^{'}(b)+a y g^{'}(b)+g(b) \\
+    z_{12} &= a (-x-y)+b \\
+    g(z_{12}) &= \frac{1}{2} a^2 x^2 g^{''}(b)+a^2 \textcolor{red}{x y} g^{''}(b)+\frac{1}{2} a^2 y^2 g^{''}(b)-a x g^{'}(b)-a y g^{'}(b)+g(b) \\
+    z_{13} &= a (-x+y)+b \\
+    g(z_{13}) &= \frac{1}{2} a^2 x^2 g^{''}(b)-a^2 \textcolor{red}{x y} g^{''}(b)+\frac{1}{2} a^2 y^2 g^{''}(b)-a x g^{'}(b)+a y g^{'}(b)+g(b) \\
+    z_{14} &= a (x-y)+b \\
+    g(z_{14}) &= \frac{1}{2} a^2 x^2 g^{''}(b)-a^2 \textcolor{red}{x y} g^{''}(b)+\frac{1}{2} a^2 y^2 g^{''}(b)+a x g^{'}(b)-a y g^{'}(b)+g(b) \\
+    \end{align*}
+    \]
+    <p>These neurons combine different ways of adding and subtracting \( x \) and \( y \), boosted by a carefully chosen number 'a'. This special number helps make the desired product stronger in each neuron's activity.</p>
+    <p><strong>Act II: The Unifying Maestro - Harmonising the Ensemble</strong></p>
+    <p>A second neuron emerges, playing the role of the maestro, orchestrating the outputs of the first layer:</p>
+    \[
+    \begin{align*}
+    X &= cg(z_{11}) + cg(z_{12}) - cg(z_{13}) - cg(z_{14}) \\
+    &= 4a^2 c xy g^{''}(b)
+    \end{align*}
+    \]
+    <p>Here, \( g(z) \) represents the activation function, guiding the flow of information within the network. \( c \) acts as a critical conductor, carefully tuning the contributions of each neuron. By setting \( c = \frac{1}{4a^2 g''(b)} \), where \( g''(z) \) denotes the second derivative of the activation function, we achieve a remarkable transformation: \( X \approx xy \), harmoniously blending the outputs of the first layer through the chosen activation function and meticulously selected parameters.</p>
+    <h3>From Theory to Code: Translating the Concerto into Python</h3>
+    <p>This code snippet defines a <code>MultiplicationRegression</code> class in PyTorch, incorporating two linear layers to construct a neural network. The first layer has four neurons to emphasize the interaction between \( x \) and \( y \), while the second layer produces the output based on this interaction. This configuration aims to capture the relationship \( xy \) within the dataset.</p>
+     <pre class="md-frame">
+        <code class="language-python">
+lass MultiplicationRegression(nn.Module):
+    def __init__(self):
+        super(MultiplicationRegression, self).__init__()
+        self.linear1 = nn.Linear(2, 4)  # Define the weight matrix.
+        self.m = nn.Sigmoid()
+        self.linear2 = nn.Linear(4, 1)  # Define the weight matrix.
+
+    
+    def forward(self, x):
+        x = self.linear1(x)
+        x = self.m(x)
+        x = self.linear2(x)
+
+        return x
+linear1.weight = [[0.01,0.01],[-0.01,-0.01],[-0.01,0.01],[0.01,-0.01]]
+linear2.weight = [[2.63907*pow(10,4),2.63907*pow(10,4),-2.63907*pow(10,4),-2.63907*pow(10,4)]]
+linear1.bias = [-1.5,-1.5,-1.5,-1.5]
+linear2.bias = [0.0]
+        </code>
+    </pre>
+    <p>For \( a=0.01 \), \( b-1.5 \), we get \( c = -2.6390\times10^{4} \), would provide a suitable fit as Shown in Fig. <a href="#fig:Multiply">9</a>, where actual and model prediction coincide with minimum error.</p>
+    <figure id="fig:Multiply">
+        <img src="assets/images/Multiply.png" alt="The Comparison between Actual and Model"style="width: 550px; height: 350px;">
+        <figcaption>(b) The Comparison between Actual and Model.</figcaption>
+    </figure>
+    <p>Neural networks can approximate non-linear functions like multiplication. Strategically designed neuron ensembles can isolate specific terms and relationships. Understanding these techniques empowers us to tackle increasingly intricate problems in neural computation.</p>
+    <h2>Conclusion</h2>
+    Through this journey, we've not only gained insights into the technical aspects of regression modeling but also appreciated the broader challenges and strategies in machine learning and deep learning. As we continue to push the boundaries of model complexity and expressiveness, this exploration serves as a foundational step towards understanding and solving more intricate real-world problems.
+    
+</section>
+<div id="subappendices">
+    <h2>Appendix</h2>
+    <h3>Activation tanh function</h3>
+    <p>We just explored the most common activation functions, and showed how it provides the appropriate non-linearity to our model.</p>
+    <p>Lets Explore another interesting one tanh activation function.</p>
+    <eqn>
+        \[
+        \begin{align}
+            g(x) &= \frac{e^{x} - e^{-x}}{e^{x} + e^{-x}} \label{Eqn:tanh} \\
+            \text{For our case:}\quad z &= y + b \quad ; \text{where } y = ax \\
+            g(z) &= \tanh(y+b) = \frac{e^{(y+b)} - e^{-(y+b)}}{e^{(y+b)} + e^{-(y+b)}}
+        \end{align}
+        \]
+    </eqn>
+    <div class="mdframed">
+        <p><strong>Approximate Tanh Activation Function</strong></p>
+        \[
+        \begin{align}
+            g(z) &\approx \tanh(b) + y \operatorname{sech}^{2}(b)-y^2 \tanh (b) \operatorname{sech}(b)^2+\frac{1}{3} y^3 (\cosh (2 b)-2) \operatorname{sech}(b)^4 \\
+            &+ y^4 \left(\tanh ^5(b)-\frac{5 \tanh ^3(b)}{3}+\frac{2 \tanh (b)}{3}\right) + \dots
+        \end{align}
+        \]
+    </div>
+    <div style="display: flex;">
+	  <div style="flex: 1;"id="fig:sigmoidb_map">
+	    <img src="assets/images/tanhimage_b_good.png" alt="Good tanh approximation" style="width: 100%;">
+	  </div>
+	  <div style="flex: 1;">
+	    <img src="assets/images/tanhimage_b_bad.png" alt="Poor tanh approximation" style="width: 100%;">
+	  </div>
+	</div>
+	<figcaption>(a) The approximated tanh function works pretty good for \(|y|<1\), for all the values of \(b\). (b) The Tanh approximation for \(|y|>1\), is only satisfied for range of \(b\) values where \(|y+b| < 1\).</figcaption>
+    <p>This Expression also remain pretty good for \(|y|<1\).</p>
+</div>
+
+<h2 id="Acknowledgements">Acknowledgements</h2>
+Thanks to Srikanth Cherukupally and Mohith Jagalmohanan for feedback on intial version of this article.
+
+<h2 id="Contribute">Contribute</h2>
+Please help me make this article better by providing appropriate feedack.
+
+<h2 id="citation">Citation</h2>
+
+<p>If you found this work helpful for your research, please cite it as following:</p>
+
+<div class="cite">
+  <pre>
+@article{ashwani2024Peepinside,
+    title   = "Peeping Inside the Black box",
+    author  = "Kushwaha, Ashwani",
+    journal = "adu-3839.github.io",
+    year    = "2024",
+    month   = "April",
+    url     = "https://adu-3839.github.io/posts/"
+}
+  </pre>
+</div>
+
+
+
+
+</body>
+</html>
+
