@@ -174,7 +174,7 @@
         <p>This equation adds a "bendiness" factor to the model, controlled by the coefficient "\( b \)". Now, by adjusting both \( a \) (slope) and \( b \) (bendiness), we can potentially achieve a much better fit to the data. It appears that \( a \approx 0 \) and \( b\approx1 \) remarkably align with our dataset in Fig. <a href="#fig:Example_Plot">1</a>.</p>
         
         <figure id= "fig:Example_Plot">
-            <img src="assets/images/Example_Plot.png" alt="Example Plot"style="width: 400px; height: 350px;">
+            <img src="images/Example_Plot.png" alt="Example Plot"style="width: 400px; height: 350px;">
             <figcaption>The Comparison between Actual Data and Model.</figcaption>
         </figure>
         <p>However, it's lamentable that we had to infer on our own which polynomial terms would best suit our model's fit. Choosing the right terms and complexity remains an exciting challenge in machine learning. Through continued exploration and analysis, we can unlock the secrets hidden within this dataset and gain valuable insights from its hidden patterns.</p>
@@ -292,10 +292,10 @@ Functions such as \(x^2, x^3, x^4\), ... etc., or combinations of these powers o
     
     	<div style="display: flex;">
 	  <div style="flex: 1;"id="fig:sigmoidb_map">
-	    <img src="assets/images/image_b_good.png" alt="Good sigmoid approximation" style="width: 100%;">
+	    <img src="images/image_b_good.png" alt="Good sigmoid approximation" style="width: 100%;">
 	  </div>
 	  <div style="flex: 1;">
-	    <img src="assets/images/image_b_bad.png" alt="Poor sigmoid approximation" style="width: 100%;">
+	    <img src="images/image_b_bad.png" alt="Poor sigmoid approximation" style="width: 100%;">
 	  </div>
 	</div>
 	<figcaption>(a) The approximated sigmoid function works pretty good for \( |y|<1 \), for all the values of \( b \).<br>
@@ -311,7 +311,7 @@ Functions such as \(x^2, x^3, x^4\), ... etc., or combinations of these powers o
     <h3>Conclusion:</h3>
     <p>The analysis underscores the vital importance of data normalization for the validity of the sigmoid function approximation. This ensures model accuracy and aligns with standard practices in deep learning.</p>
     <figure id="fig:dersig">
-        <img src="assets/images/image_b_derivative.png" alt="Derivatives of Sigmoid Function"style="width: 400px; height: 350px;">
+        <img src="images/image_b_derivative.png" alt="Derivatives of Sigmoid Function"style="width: 400px; height: 350px;">
         <figcaption>The derivatives of Sigmoid Function.</figcaption>
     </figure>
     <p>While a formal proof falls outside the scope of our current discussion, visual examination of the derivative of sigmoid functions, as depicted in Fig. <a href="#fig:dersig">3</a>, reveals a salient characteristic: their values consistently remain bounded below unity.</p>
@@ -328,7 +328,7 @@ Functions such as \(x^2, x^3, x^4\), ... etc., or combinations of these powers o
     \[ z = ax + b \]
     \[ X = g(z) \]
     <figure id="fig:one_neuron">
-        <img src="assets/images/one_neuron.png" alt="The One neuron architecture of DL"style="width: 400px; height: 150px;">
+        <img src="images/one_neuron.png" alt="The One neuron architecture of DL"style="width: 400px; height: 150px;">
         <figcaption>The One neuron architecture of DL.</figcaption>
     </figure>
     <ul>
@@ -342,7 +342,7 @@ Functions such as \(x^2, x^3, x^4\), ... etc., or combinations of these powers o
     <p><strong>Hitting the Wall:</strong> Despite the non-linear activation function \( g \), the single neuron's inherent linearity shackles its ability to fully capture the quadratic curvature of \( X \approx x^2 \). This limitation impedes our network from accurately modeling the desired relationship.</p>
     <h3>Enhancing Expressive Capacity with Two Neurons</h3>
     <figure id="fig:two_neuron">
-        <img src="assets/images/two_neuron.png" alt="The Two neuron architecture of DL"style="width: 400px; height: 300px;">
+        <img src="images/two_neuron.png" alt="The Two neuron architecture of DL"style="width: 400px; height: 300px;">
         <figcaption>The Two neuron architecture of DL.</figcaption>
     </figure>
     <p>To transcend the limitations posed by a solitary neuron, we advance towards a more potent architecture as shown in Fig. <a href="#fig:two_neuron">5</a>; dual-neuron network:</p>
@@ -403,7 +403,7 @@ linear2.bias = [7.248*pow(10,5)]
     <p>For values \( a_{12} = - a_{11} = -0.01 \) and \( b_{12} = 3.5 \), we would get \( a_{21} = a_{22} = -3.73344 \times 10^{5} \) and \( b_2 = 7.248 \times 10^{5} \). This would provide a suitable fit as Shown in Fig. <a href="#fig:Square">6</a>, where actual and model prediction coincide with minimum error.</p>
     <p>This setup aims to approximate a polynomial relationship within the data. We'll proceed to test this model.</p>
       <figure id="fig:Square">
-        <img src="assets/images/Square.png" alt="The Comparison between Actual and Model"style="width: 400px; height: 350px;">
+        <img src="images/Square.png" alt="The Comparison between Actual and Model"style="width: 400px; height: 350px;">
         <figcaption>The Comparison between Actual and Model.</figcaption>
     </figure>
     <p>While the current approach holds promise, could we potentially push the envelope further? Perhaps incorporating higher-order terms, such as cubic terms, into the model might yield even more accurate results.</p>
@@ -464,7 +464,7 @@ linear2.bias = [-1.58232*pow(10,6)]
     </pre>
     <p>For values \( a_{11}= 0.01 \), \( b_{11} = 0.5 \) and \( b_{12} = -0.1 \), we would get \( a_{12}= -0.0490245 \), \( a_{21} = 2.21685 \times 10^{6} \), \( a_{22} = 4.2613 \times 10^{5} \) and \( b_{21}=-1.58232\times 10^{6} \). This would provide a suitable fit as Shown in Fig. <a href="#fig:Cube">7</a>, where actual and model prediction coincide with minimum error.</p>
     <figure id="fig:Cube">
-        <img src="assets/images/Cube.png" alt="The Comparison between Actual and Model"style="width: 400px; height: 350px;">
+        <img src="images/Cube.png" alt="The Comparison between Actual and Model"style="width: 400px; height: 350px;">
         <figcaption>The Comparison between Actual and Model.</figcaption>
     </figure>
     <p>This configuration endeavors to mimic a polynomial association within the dataset. Our next step involves testing this model's performance and meticulously analyzing its accuracy in capturing the inherent data patterns.</p>
@@ -487,7 +487,7 @@ linear2.bias = [-1.58232*pow(10,6)]
     <p>The architectural masterpiece we unveil unfolds in two acts as Shown in Fig. <a href="#fig:four_neuron">8</a>. The Four neuron architecture of DL:</p>
     <p><strong>Act I: The First Hidden Layer - A Quartet of Emphasis</strong></p>
     <figure id="fig:four_neuron">
-        <img src="assets/images/four_neurons.png" alt="The Four neuron architecture of DL"style="width: 350px; height: 350px;">
+        <img src="images/four_neurons.png" alt="The Four neuron architecture of DL"style="width: 350px; height: 350px;">
         <figcaption>The Four neuron architecture of DL.</figcaption>
     </figure>
     
@@ -540,7 +540,7 @@ linear2.bias = [0.0]
     </pre>
     <p>For \( a=0.01 \), \( b-1.5 \), we get \( c = -2.6390\times10^{4} \), would provide a suitable fit as Shown in Fig. <a href="#fig:Multiply">9</a>, where actual and model prediction coincide with minimum error.</p>
     <figure id="fig:Multiply">
-        <img src="assets/images/Multiply.png" alt="The Comparison between Actual and Model"style="width: 550px; height: 350px;">
+        <img src="images/Multiply.png" alt="The Comparison between Actual and Model"style="width: 550px; height: 350px;">
         <figcaption>(b) The Comparison between Actual and Model.</figcaption>
     </figure>
     <p>Neural networks can approximate non-linear functions like multiplication. Strategically designed neuron ensembles can isolate specific terms and relationships. Understanding these techniques empowers us to tackle increasingly intricate problems in neural computation.</p>
@@ -573,10 +573,10 @@ linear2.bias = [0.0]
     </div>
     <div style="display: flex;">
 	  <div style="flex: 1;"id="fig:sigmoidb_map">
-	    <img src="assets/images/tanhimage_b_good.png" alt="Good tanh approximation" style="width: 100%;">
+	    <img src="images/tanhimage_b_good.png" alt="Good tanh approximation" style="width: 100%;">
 	  </div>
 	  <div style="flex: 1;">
-	    <img src="assets/images/tanhimage_b_bad.png" alt="Poor tanh approximation" style="width: 100%;">
+	    <img src="images/tanhimage_b_bad.png" alt="Poor tanh approximation" style="width: 100%;">
 	  </div>
 	</div>
 	<figcaption>(a) The approximated tanh function works pretty good for \(|y|<1\), for all the values of \(b\). (b) The Tanh approximation for \(|y|>1\), is only satisfied for range of \(b\) values where \(|y+b| < 1\).</figcaption>
