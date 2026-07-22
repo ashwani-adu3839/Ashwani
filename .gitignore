@@ -1,0 +1,38 @@
+# ============================================================
+# Publish only the biography homepage + explore index for now.
+# Everything else stays local (essays, tools, tex, demos, …).
+# To publish a path later: add a "!path" exception below.
+# ============================================================
+
+# Ignore everything at the repo root
+/*
+
+# Keep git / Pages essentials
+!.gitignore
+!.nojekyll
+
+# Biography
+!index.html
+
+# Explore index (notes inside it are commented out)
+!writing/
+writing/*
+!writing/index.html
+
+# Shared assets those two pages need to render
+!assets/
+assets/*
+!assets/css/
+assets/css/*
+!assets/css/site.css
+!assets/images/
+assets/images/*
+!assets/images/profile/
+assets/images/profile/*
+!assets/images/profile/ashwani.jpg
+
+# Local / editor junk (also covered by /* but kept explicit)
+__pycache__/
+*.py[cod]
+.DS_Store
+.vscode/
